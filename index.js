@@ -39,7 +39,7 @@ async function run() {
     const closePermissionIndex = permissionLevels.indexOf(closePermission)
     const lockPermissionIndex = permissionLevels.indexOf(lockPermission)
 
-    if (permissionIndex >= closePermissionIndex && permissionIndex <= lockPermissionIndex) {
+    if (permissionIndex >= closePermissionIndex && permissionIndex < lockPermissionIndex) {
       core.debug(`Adding message: ${closeMessage} to Issue #${issue.number}`);
 
       await client.issues.createComment({
