@@ -1,5 +1,6 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
+const permissionLevels = ["read", "triage", "write", "maintain", "admin"];
 
 async function run() {
   try {
@@ -34,8 +35,11 @@ async function run() {
       username: github.context.actor
     })
     const permissionLevel = permission.data.permission
+    const permissionIndex = permissionLevels.indexOf(permissionLevel)
+    const closePermissionIndex = permissionLevels.indexOf(closePermission)
+    const lockPermissionIndex = permissionLevels.indexOf(lockPermission)
 
-    if (permissionLevel == closePermission) {
+    if (permissionIndex >= closePermissionIndex && permissionIndex <= lockPermissionIndex) {
       core.debug(`Adding message: ${closeMessage} to Issue #${issue.number}`);
 
       await client.issues.createComment({
@@ -53,7 +57,7 @@ async function run() {
         issue_number: issue.number,
         state: 'closed'
       });
-    } else if (permissionLevel == lockPermission) {
+    } else if (permissionIndex >= lockPermissionIndex) {
       core.debug(`Adding message: ${lockMessage} to Issue #${issue.number}`);
 
       await client.issues.createComment({
